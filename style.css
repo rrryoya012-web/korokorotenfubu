@@ -60,10 +60,9 @@ canvas {
 
 #ui-layer {
     position: fixed;
-    /* absolute -> fixed (Viewport基準) */
-    top: 100px;
-    /* User Request: 100,100 */
-    left: 100px;
+    top: 15%;
+    /* 画像のSCORE位置に合わせる */
+    left: 8%;
     pointer-events: none;
     z-index: 100;
     display: flex;
@@ -179,14 +178,17 @@ input[type=range] {
     /* Placeholder */
 }
 
-/* 進化ルート表示 - 1100,250を中心に配置 */
+/* 進化ルート表示 - 画像の右側に配置 */
 #evolution-container {
     position: fixed;
-    /* absolute -> fixed */
-    top: 250px;
-    left: 1100px;
-    transform: translate(-50%, -50%);
-    /* 中心基準 */
+    top: 50%;
+    /* 垂直中央 */
+    right: 5%;
+    /* 右端から5% */
+    left: auto;
+    /* fixed解除 */
+    transform: translateY(-50%);
+    /* 垂直方向のみ中央寄せ */
     background: rgba(135, 206, 235, 0.7);
     border-radius: 50%;
     backdrop-filter: blur(5px);
@@ -693,16 +695,15 @@ button:active {
     object-fit: contain;
 }
 
-/* 設定ボタン（歯車） - 1250, 100 に配置 */
+/* 設定ボタン（歯車） - 画像の右上に配置 */
 #settings-btn {
     position: fixed;
-    /* absolute -> fixed */
-    top: 100px;
-    left: 1250px;
-    /* User Request */
-    right: auto;
-    width: 40px;
-    height: 40px;
+    top: 5%;
+    right: 3%;
+    left: auto;
+    width: 50px;
+    /* 少し大きく */
+    height: 50px;
     padding: 0;
     border-radius: 50%;
     font-size: 20px;
