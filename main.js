@@ -925,3 +925,53 @@ container.removeEventListener('mousemove', container.onmousemove); // 古いの�
 // 既存のイベントリスナー置き換えは難しいので、上の 'mousemove' ロジック内で変換を行うように修正が必要
 // 既存コード修正のため、container.addEventListener('mousemove', ...) の中身を修正するアプローチをとる
 
+// Gキーでデバッググリッド表示切り替え
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'g' || e.key === 'G') {
+        const grid = document.getElementById('debug-grid');
+        if (grid) {
+            console.log('Toggle Grid visibility');
+            grid.classList.toggle('hidden');
+            if (!grid.classList.contains('hidden')) {
+                // 表示時だけ更新
+                updateGridLabels();
+            }
+        } else {
+            console.error('Debug grid element not found');
+        }
+    }
+});
+
+function updateGridLabels() {
+    const grid = document.getElementById('debug-grid');
+    if (!grid) return;
+
+    // 既存ラベル削除
+    grid.innerHTML = '';
+
+    // ウィンドウ全体基準
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const step = 50;
+
+    for (let x = 0; x <= w; x += step) {
+        for (let y = 0; y <= h; y += step) {
+            // 50px毎にラベル表示
+            if (x % 50 === 0 && y % 50 === 0) {
+                const label = document.createElement('div');
+                label.className = 'grid-label';
+                label.style.left = `${x}px`;
+                label.style.top = `${y}px`;
+                label.textContent = `${x},${y}`;
+                grid.appendChild(label);
+            }
+        }
+    }
+}
+
+// 初期表示
+window.addEventListener('load', () => {
+    updateGridLabels();
+    window.addEventListener('resize', updateGridLabels);
+});
+

@@ -11,7 +11,7 @@ body {
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-image: url('assets/bg/bg2.png');
-    background-size: cover;
+    background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -58,11 +58,16 @@ canvas {
 }
 
 #ui-layer {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    position: absolute;
+    top: 100px;
+    /* User Request: 100,100 */
+    left: 100px;
     pointer-events: none;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+    /* 縦並び */
+    gap: 10px;
     /* JSで動的に位置調整される */
 }
 
@@ -172,27 +177,26 @@ input[type=range] {
     /* Placeholder */
 }
 
-/* 進化ルート表示 */
+/* 進化ルート表示 - 1100,250を中心に配置 */
 #evolution-container {
-    position: fixed;
-    left: 40px;
-    /* 右上のスペースに配置 */
+    position: absolute;
     top: 250px;
-    /* 少し下にずらす */
-    background: rgba(135, 206, 235, 0.6);
-    /* スカイブルー */
+    left: 1100px;
+    transform: translate(-50%, -50%);
+    /* 中心基準 */
+    background: rgba(135, 206, 235, 0.7);
     border-radius: 50%;
-    /* 完全な円形 */
     backdrop-filter: blur(5px);
     color: #fff;
     width: 260px;
-    /* 正方形にする */
+    /* 元のサイズに戻す (大きくて見やすいように) */
     height: 260px;
     pointer-events: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 }
 
 #evolution-container h3 {
@@ -202,6 +206,7 @@ input[type=range] {
     transform: translate(-50%, -50%);
     margin: 0;
     font-size: 14px;
+    /* 元のサイズ */
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -625,31 +630,52 @@ button:active {
 
 /* スコア表示の改善 */
 #score-container {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 30px;
+    padding: 5px 15px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    background: rgba(135, 206, 235, 0.6);
-    /* スカイブルー、進化ルートと同じ */
-    padding: 10px 20px;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
+    align-items: center;
+    min-width: 100px;
+    /* 幅確保 */
 }
 
 .score-label {
-    font-size: 1rem;
-    font-weight: normal;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 5px;
+    font-size: 12px;
+    color: #ff6b6b;
+    font-weight: bold;
+    text-shadow: none;
+    /* 影なしで見やすく */
 }
 
 #score-display {
-    font-size: 2.5rem;
+    font-size: 24px;
     font-weight: bold;
-    color: var(--text-color);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: #333;
+    text-shadow: none;
 }
 
 /* NEXTアイコンを大きく */
+#next-fruit-display {
+    display: flex;
+    flex-direction: column;
+    /* 文字の下にアイコン */
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    /* 背景追加して見やすく */
+    border-radius: 15px;
+    padding: 10px;
+}
+
+#next-fruit-display span {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: black;
+    /* User Request: 文字色黒 */
+    text-shadow: none;
+}
+
 #next-fruit-preview {
     width: 80px;
     height: 80px;
@@ -664,21 +690,23 @@ button:active {
     object-fit: contain;
 }
 
-/* 設定ボタン（歯車） - Canvasの左下に配置 */
+/* 設定ボタン（歯車） - 1250, 100 に配置 */
 #settings-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 50px;
-    height: 50px;
+    position: absolute;
+    top: 100px;
+    left: 1250px;
+    /* User Request */
+    right: auto;
+    width: 40px;
+    height: 40px;
     padding: 0;
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 20px;
     z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     pointer-events: auto;
@@ -1078,4 +1106,45 @@ button:active {
     color: #aaa;
     font-size: 0.9rem;
     font-style: italic;
+}
+
+/* デバッグ用グリッド (全体基準) */
+#debug-grid {
+    position: fixed;
+    /* 全体基準に戻す */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    background-image:
+        linear-gradient(cyan 1px, transparent 1px),
+        linear-gradient(90deg, cyan 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+}
+
+#debug-grid::after {
+    content: "Grid: 50px / 10px (Toggle: G)";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: cyan;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    font-size: 16px;
+    border: 1px solid cyan;
+}
+
+.grid-label {
+    position: absolute;
+    color: cyan;
+    font-size: 10px;
+    transform: translate(2px, 2px);
+    /* 線とかぶらないように少しずらす */
+    pointer-events: none;
+    text-shadow: 1px 1px 0 #000;
 }

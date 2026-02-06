@@ -116,13 +116,10 @@
     </div>
 
     <div id="game-container" class="hidden">
-        <div id="canvas-wrapper">
-            <!-- Canvas will be injected here by Matter.js -->
-        </div>
+        <!-- デバッグ用グリッド (全体基準に戻す) -->
+        <div id="debug-grid"></div>
 
-        <!-- カウントダウン表示 -->
-        <div id="countdown-display" class="hidden">3</div>
-
+        <!-- UI Layer: SCORE & NEXT (左側: 100,100) -->
         <div id="ui-layer">
             <div id="score-container">
                 <div class="score-label">SCORE</div>
@@ -133,16 +130,23 @@
                 <div id="next-fruit-preview"></div>
             </div>
         </div>
-    </div>
 
-    <!-- 進化ルート表示欄 -->
-    <div id="evolution-container">
-        <h3>進化ルート</h3>
-        <div id="evolution-list"></div>
-    </div>
+        <div id="canvas-wrapper">
+            <!-- Canvas will be injected here by Matter.js -->
+        </div>
 
-    <!-- 設定ボタン（歯車） -->
-    <button id="settings-btn" class="icon-btn">⚙️</button>
+        <!-- 進化ルート (右側: 1100, 250) -->
+        <div id="evolution-container">
+            <h3>進化ルート</h3>
+            <div id="evolution-list"></div>
+        </div>
+
+        <!-- 設定ボタン（歯車）(右側: 1250, 100) -->
+        <button id="settings-btn" class="icon-btn">⚙️</button>
+
+        <!-- カウントダウン表示 -->
+        <div id="countdown-display" class="hidden">3</div>
+    </div>
 
     <!-- ポーズメニュー（設定画面） -->
     <div id="pause-menu" class="hidden">
@@ -202,6 +206,8 @@
         </div>
     </div>
     </div>
+
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <script type="module" src="main.js"></script>
