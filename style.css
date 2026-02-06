@@ -686,7 +686,7 @@ button:active {
 #settings-btn {
     position: fixed;
     top: 5%;
-    right: calc(3% + 100px);
+    right: calc(3% + 70px);
     /* 左に100pxずらす */
     left: auto;
     bottom: auto;
