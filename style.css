@@ -254,9 +254,8 @@ input[type=range] {
 }
 
 .evo-final .evo-img {
-    width: 70px;
-    /* 通常の2倍 */
-    height: 70px;
+    width: 90px;
+    height: 90px;
     filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
 }
 
