@@ -35,7 +35,7 @@ body {
 
 #canvas-wrapper {
     position: relative;
-    width: 333px;
+    width: 380px;
     /* Match GAME_SETTINGS.WIDTH */
     height: 500px;
     /* Match GAME_SETTINGS.HEIGHT */
@@ -45,6 +45,8 @@ body {
     background-repeat: no-repeat;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    touch-action: none;
+    /* スマホでのスクロール防止 */
 }
 
 canvas {
@@ -56,12 +58,12 @@ canvas {
 }
 
 #ui-layer {
-    position: absolute;
-    top: 20px;
-    left: 80px;
-    /* さらに右へ移動 */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
     pointer-events: none;
-    /* Let clicks pass through to game */
+    z-index: 100;
+    /* JSで動的に位置調整される */
 }
 
 /* ポーズメニュー & オプション画面共通のかわいいスタイル */
@@ -173,7 +175,7 @@ input[type=range] {
 /* 進化ルート表示 */
 #evolution-container {
     position: fixed;
-    right: 40px;
+    left: 40px;
     /* 右上のスペースに配置 */
     top: 250px;
     /* 少し下にずらす */
@@ -662,11 +664,11 @@ button:active {
     object-fit: contain;
 }
 
-/* 設定ボタン（歯車） */
+/* 設定ボタン（歯車） - Canvasの左下に配置 */
 #settings-btn {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    bottom: 20px;
+    left: 20px;
     width: 50px;
     height: 50px;
     padding: 0;
@@ -680,8 +682,8 @@ button:active {
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     pointer-events: auto;
-    /* クリック可能にする */
     cursor: pointer;
+    /* JSで動的に位置調整される */
 }
 
 #settings-btn:hover {

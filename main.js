@@ -277,6 +277,91 @@ const render = Render.create({
     }
 });
 
+// レスポンシブ対応 (Responsive Resize)
+function resizeCanvas() {
+    const wrapper = document.getElementById('canvas-wrapper');
+    const container = document.getElementById('game-container');
+
+    // ウィンドウの幅と高さ
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // ゲームのアスペクト比
+    const gameRatio = GAME_SETTINGS.WIDTH / GAME_SETTINGS.HEIGHT;
+    const windowRatio = windowWidth / windowHeight;
+
+    let scale = 1;
+
+    // ウィンドウに合わせてスケール計算 (マージンなしで最大化)
+    if (windowRatio < gameRatio) {
+        // 横幅基準
+        scale = (windowWidth - 20) / GAME_SETTINGS.WIDTH; // 少しマージン
+    } else {
+        // 高さ基準
+        scale = (windowHeight - 40) / GAME_SETTINGS.HEIGHT; // 上下マージン
+    }
+
+    // スケール制限 (拡大しすぎない、縮小しすぎない)
+    // モバイルの場合は小さくてもフィットさせる
+    scale = Math.min(scale, 1.5); // 最大1.5倍まで
+    // scale = Math.max(scale, 0.5); // 最小制限は一旦なし
+
+    // 方法B: CSS width/height を操作 (Matter.jsが自動補正)
+    const newWidth = GAME_SETTINGS.WIDTH * scale;
+    const newHeight = GAME_SETTINGS.HEIGHT * scale;
+
+    wrapper.style.width = `${newWidth}px`;
+    wrapper.style.height = `${newHeight}px`;
+
+    // UI要素の位置を更新
+    updateUIPositions();
+}
+
+// UI要素をCanvas基準で配置
+function updateUIPositions() {
+    const wrapper = document.getElementById('canvas-wrapper');
+    if (!wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
+
+    // SCORE/NEXT (Canvasの右下)
+    const uiLayer = document.getElementById('ui-layer');
+    if (uiLayer) {
+        uiLayer.style.position = 'fixed';
+        uiLayer.style.left = 'auto';
+        uiLayer.style.top = 'auto';
+        uiLayer.style.right = `${window.innerWidth - rect.right + 10}px`;
+        uiLayer.style.bottom = `${window.innerHeight - rect.bottom + 10}px`;
+    }
+
+    // 歯車アイコン (Canvasの左下)
+    const settingsBtn = document.getElementById('settings-btn');
+    if (settingsBtn) {
+        settingsBtn.style.position = 'fixed';
+        settingsBtn.style.left = `${rect.left + 10}px`;
+        settingsBtn.style.right = 'auto';
+        settingsBtn.style.top = 'auto';
+        settingsBtn.style.bottom = `${window.innerHeight - rect.bottom + 10}px`;
+    }
+
+    // 進化ルート (Canvasの左側、垂直中央)
+    const evoContainer = document.getElementById('evolution-container');
+    if (evoContainer) {
+        evoContainer.style.position = 'fixed';
+        evoContainer.style.left = 'auto';
+        // Canvasの左端から進化ルートの幅(260)+余白(20)だけ左へ
+        evoContainer.style.right = `${window.innerWidth - rect.left + 20}px`;
+        // 垂直中央 (Canvasの中心に揃える)
+        const evoHeight = 260; // CSS定義値
+        evoContainer.style.top = `${rect.top + (rect.height - evoHeight) / 2}px`;
+    }
+}
+
+// 初期化時とリサイズ時に実行
+window.addEventListener('resize', resizeCanvas);
+// 読み込み完了後にも実行
+setTimeout(resizeCanvas, 100);
+
 // Walls
 const wallOptions = { isStatic: true, render: { fillStyle: '#444' } };
 const ground = Bodies.rectangle(GAME_SETTINGS.WIDTH / 2, GAME_SETTINGS.HEIGHT, GAME_SETTINGS.WIDTH, GAME_SETTINGS.WALL_THICKNESS, wallOptions);
@@ -478,8 +563,14 @@ const container = document.getElementById('game-container');
 
 container.addEventListener('mousemove', (e) => {
     if (state.gameOver || state.isDropping) return;
+
+    // 座標変換 (レスポンシブ対応)
     const rect = render.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+    const scaleX = GAME_SETTINGS.WIDTH / rect.width;
+
+    // Canvas内座標に変換
+    const x = (e.clientX - rect.left) * scaleX;
+
     // Clamp
     const currentRadius = FRUITS[state.currFruitIdx].radius * GAME_SETTINGS.BASE_RADIUS_SCALE;
     const minX = GAME_SETTINGS.WALL_THICKNESS / 2 + currentRadius;
@@ -487,8 +578,32 @@ container.addEventListener('mousemove', (e) => {
     currentX = Math.max(minX, Math.min(maxX, x));
 });
 
+// タッチ対応 (スマホ)
+container.addEventListener('touchmove', (e) => {
+    if (state.gameOver || state.isDropping) return;
+    e.preventDefault(); // スクロール防止
+
+    const touch = e.touches[0];
+    const rect = render.canvas.getBoundingClientRect();
+    const scaleX = GAME_SETTINGS.WIDTH / rect.width;
+
+    const x = (touch.clientX - rect.left) * scaleX;
+
+    const currentRadius = FRUITS[state.currFruitIdx].radius * GAME_SETTINGS.BASE_RADIUS_SCALE;
+    const minX = GAME_SETTINGS.WALL_THICKNESS / 2 + currentRadius;
+    const maxX = GAME_SETTINGS.WIDTH - GAME_SETTINGS.WALL_THICKNESS / 2 - currentRadius;
+    currentX = Math.max(minX, Math.min(maxX, x));
+}, { passive: false });
+
 container.addEventListener('click', (e) => {
     if (state.gameOver || state.isDropping) return;
+    dropFruit();
+});
+
+// タッチ終了でドロップ
+container.addEventListener('touchend', (e) => {
+    if (state.gameOver || state.isDropping) return;
+    e.preventDefault();
     dropFruit();
 });
 
@@ -774,3 +889,39 @@ spawnCurrentFruit();
 const runner = Runner.create();
 Runner.run(runner, engine);
 Render.run(render);
+
+// 初回リサイズ実行
+resizeCanvas();
+
+// Matter.jsのマウス制御補正
+// Canvasの表示サイズが変わるとマウス座標がずれるため、Matter.jsのMouseを更新
+const mouse = Matter.Mouse.create(render.canvas);
+const mouseConstraint = Matter.MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+        stiffness: 0.2,
+        render: {
+            visible: false
+        }
+    }
+});
+// 今回はドラッグ操作不要だが、Mouseオブジェクトは入力取得に必要
+// ただし、自前のmousemove/clickを使ってるので、そちらの座標変換が必要
+
+// 自前の入力イベントでの座標変換
+function getGameCoordinates(clientX, clientY) {
+    const rect = render.canvas.getBoundingClientRect();
+    const scaleX = GAME_SETTINGS.WIDTH / rect.width;
+    const scaleY = GAME_SETTINGS.HEIGHT / rect.height;
+
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+// イベントリスナーの更新
+container.removeEventListener('mousemove', container.onmousemove); // 古いのがあれば（今回は直接定義してるので無理）
+// 既存のイベントリスナー置き換えは難しいので、上の 'mousemove' ロジック内で変換を行うように修正が必要
+// 既存コード修正のため、container.addEventListener('mousemove', ...) の中身を修正するアプローチをとる
+
