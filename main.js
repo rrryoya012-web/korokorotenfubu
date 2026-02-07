@@ -498,21 +498,54 @@ function spawnCurrentFruit() {
 // Input Events
 const container = document.getElementById('game-container');
 
+// マウス操作
 container.addEventListener('mousemove', (e) => {
     if (state.gameOver || state.isDropping) return;
-    const rect = render.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    // Clamp
-    const currentRadius = FRUITS[state.currFruitIdx].radius * GAME_SETTINGS.BASE_RADIUS_SCALE;
-    const minX = GAME_SETTINGS.WALL_THICKNESS / 2 + currentRadius;
-    const maxX = GAME_SETTINGS.WIDTH - GAME_SETTINGS.WALL_THICKNESS / 2 - currentRadius;
-    currentX = Math.max(minX, Math.min(maxX, x));
+    updateCurrentX(e.clientX);
 });
 
 container.addEventListener('click', (e) => {
     if (state.gameOver || state.isDropping) return;
     dropFruit();
 });
+
+// タッチ操作（スマホ対応）
+container.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+        e.preventDefault(); // スクロール防止
+        startBGM(); // iOS等でのオーディオ再生トリガー
+        if (!state.gameOver && !state.isDropping) {
+            updateCurrentX(e.touches[0].clientX);
+        }
+    }
+}, { passive: false });
+
+container.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+        e.preventDefault(); // スクロール防止
+        if (!state.gameOver && !state.isDropping) {
+            updateCurrentX(e.touches[0].clientX);
+        }
+    }
+}, { passive: false });
+
+container.addEventListener('touchend', (e) => {
+    if (state.gameOver || state.isDropping) return;
+    e.preventDefault(); // クリックイベントの重複発火防止
+    dropFruit();
+}, { passive: false });
+
+// 座標更新の共通関数
+function updateCurrentX(clientX) {
+    const rect = render.canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+
+    // Clamp
+    const currentRadius = FRUITS[state.currFruitIdx].radius * GAME_SETTINGS.BASE_RADIUS_SCALE;
+    const minX = GAME_SETTINGS.WALL_THICKNESS / 2 + currentRadius;
+    const maxX = GAME_SETTINGS.WIDTH - GAME_SETTINGS.WALL_THICKNESS / 2 - currentRadius;
+    currentX = Math.max(minX, Math.min(maxX, x));
+}
 
 function dropFruit() {
     // BGMを開始（初回クリック時）
