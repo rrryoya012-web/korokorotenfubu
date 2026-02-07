@@ -48,6 +48,21 @@ GitHub公開予定のため、コードはクリーンに保つ。
 - JavaScript (ES6+)
 - Matter.js (物理エンジン)
 
+## Phase 4: Mobile Support & Optimization (New)
+- [ ] **Touch Event Implementation**
+    - Add `touchstart`, `touchmove`, `touchend` to `game-container`.
+    - Map touch coordinates to game logic coordinates.
+    - Prevent default touch behaviors (scrolling/zooming) within game area.
+- [ ] **Responsive Design (CSS)**
+    - Add media query for mobile devices (`max-width: 600px` or `768px`).
+    - **Layout Adjustments**:
+        - Game Container: Center horizontally, adjust scale/size to fit width.
+        - UI Elements (Score, Next, Settings): Reposition to top bar or compact layout.
+        - Evolution Chart: Move to bottom or make it toggleable/collapsible.
+    - **Font & Icon Sizing**: Adjust sizes for readability on small screens.
+- [ ] **Viewport Settings**
+    - Update `meta viewport` to prevent accidental zooming (`user-scalable=no`).
+
 ## 実装状況（完了済み）
 - [x] 基本的なゲームループと物理演算 (Matter.js)
 - [x] フルーツ（キャラクター）の定義と進化ロジック（11段階）
