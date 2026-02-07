@@ -108,6 +108,17 @@
         width: 25px;
         height: 25px;
     }
+
+    .pool-area {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        padding: 5px;
+        justify-items: center;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
 }
 
 /* 追加: 選択状態のスタイル (全デバイス共通) */
