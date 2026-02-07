@@ -130,6 +130,9 @@ document.getElementById('start-btn').addEventListener('click', () => {
     document.getElementById('settings-btn').classList.remove('hidden');
 
     spawnCurrentFruit();
+
+    // ズーム調整ヒントを表示
+    showZoomHint();
 });
 
 // ... (中略) ...
@@ -242,31 +245,7 @@ document.getElementById('pause-title-btn').addEventListener('click', () => {
     document.getElementById('settings-btn').classList.add('hidden');
     titleMenuScreen.classList.remove('hidden');
 
-    // ズーム調整ヒントの表示制御
-    const zoomHint = document.getElementById('zoom-hint');
-    const zoomCheck = document.getElementById('zoom-hint-check');
-
-    // スマホ判定（簡易的）
-    const isMobile = window.innerWidth <= 768;
-
-    if (zoomHint && !localStorage.getItem('hideZoomHint') && !isMobile) {
-        zoomHint.style.display = 'block'; // classList.remove('hidden') ではなく直接 style.display を操作（style.cssで display: none なので）
-
-        // チェックボックスイベント
-        if (zoomCheck) {
-            zoomCheck.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    localStorage.setItem('hideZoomHint', 'true');
-                    // フェードアウトさせて消す
-                    zoomHint.style.transition = 'opacity 0.5s';
-                    zoomHint.style.opacity = '0';
-                    setTimeout(() => {
-                        zoomHint.style.display = 'none';
-                    }, 500);
-                }
-            });
-        }
-    }
+    // タイトルに戻るときはズームヒントを表示しない（ゲーム開始時のみにするため）
 });
 
 // ポーズメニューの音量調整
@@ -801,6 +780,43 @@ document.getElementById('back-to-title-btn').addEventListener('click', () => {
     bgm.pause();
     bgm.currentTime = 0;
 });
+
+// ズーム調整ヒントを表示する関数
+function showZoomHint() {
+    // ズーム調整ヒントの表示制御
+    const zoomHint = document.getElementById('zoom-hint');
+    const zoomCheck = document.getElementById('zoom-hint-check');
+
+    // スマホ判定（簡易的）
+    const isMobile = window.innerWidth <= 768;
+
+    // まだ非表示設定にしておらず、PCの場合のみ表示
+    if (zoomHint && !localStorage.getItem('hideZoomHint') && !isMobile) {
+        // クラスによる非表示を解除確実に行う
+        zoomHint.classList.remove('hidden');
+        zoomHint.style.display = 'block';
+        zoomHint.style.zIndex = '10000'; // 前面表示を維持
+
+        // チェックボックスイベント
+        if (zoomCheck) {
+            // イベントリスナーが重複しないように一度クローンして置換（簡易的な方法）
+            const newZoomCheck = zoomCheck.cloneNode(true);
+            zoomCheck.parentNode.replaceChild(newZoomCheck, zoomCheck);
+
+            newZoomCheck.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    localStorage.setItem('hideZoomHint', 'true');
+                    // フェードアウトさせて消す
+                    zoomHint.style.transition = 'opacity 0.5s';
+                    zoomHint.style.opacity = '0';
+                    setTimeout(() => {
+                        zoomHint.style.display = 'none';
+                    }, 500);
+                }
+            });
+        }
+    }
+}
 
 // Custom Rendering (lines, guide)
 Events.on(render, 'afterRender', () => {

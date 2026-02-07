@@ -1133,7 +1133,7 @@ button:active {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     font-size: 0.9rem;
     color: #555;
-    z-index: 3000;
+    z-index: 10000;
     font-weight: bold;
     animation: floatHint 3s ease-in-out infinite;
     display: none;
