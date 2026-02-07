@@ -120,7 +120,7 @@ export const PHYSICS_SETTINGS = {
 };
 
 export const GAME_SETTINGS = {
-    WIDTH: 380,          // 箱の幅（背景画像に合わせて380に変更）
+    WIDTH: 400,          // 箱の幅（380 -> 400に変更）
     HEIGHT: 500,         // 箱の高さ
     WALL_THICKNESS: 10,  // 壁の厚さ
     BASE_RADIUS_SCALE: 15, // 1.0 radius = 15px（箱サイズに合わせて調整）

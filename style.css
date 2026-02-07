@@ -36,7 +36,7 @@ body {
 
 #canvas-wrapper {
     position: relative;
-    width: 380px;
+    width: 400px;
     /* Match GAME_SETTINGS.WIDTH */
     height: 500px;
     /* Match GAME_SETTINGS.HEIGHT */
